@@ -1,0 +1,17 @@
+async function search() {
+  const query = encodeURIComponent(args.join(" "));
+  const url = `https://api.duckduckgo.com/?q=${query}&format=json&no_redirect=1`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+      const topic = data.RelatedTopics.find(t => t.Text);
+      if (topic) return topic.Text;
+    }
+    return "No results found.";
+  } catch {
+    return "Error fetching search results.";
+  }
+}
