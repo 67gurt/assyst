@@ -1,0 +1,27 @@
+const fetch = require("node-fetch"); // Assyst might have fetch or you can try global fetch
+
+async function mytag(tagName) {
+  // The tagName here is expected to contain your search terms,
+  // e.g. "JavaScript tutorial" or "Roblox shredder"
+  const query = encodeURIComponent(tagName);
+
+  const url = `https://api.duckduckgo.com/?q=${query}&format=json&no_redirect=1`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+      // Find first RelatedTopic with Text property
+      const firstTopic = data.RelatedTopics.find(topic => topic.Text);
+      if (firstTopic) {
+        return firstTopic.Text;
+      }
+    }
+    return "No results found.";
+  } catch (e) {
+    return "Error fetching search results.";
+  }
+}
+
+module.exports = mytag;
