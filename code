@@ -1,0 +1,35 @@
+const https = require("https");
+
+function search() {
+  const query = encodeURIComponent(args.join(" "));
+
+  return new Promise((resolve) => {
+    const url = `https://api.duckduckgo.com/?q=${query}&format=json&no_redirect=1`;
+
+    https.get(url, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
+      res.on("end", () => {
+        try {
+          const json = JSON.parse(data);
+          if (json.RelatedTopics && json.RelatedTopics.length > 0) {
+            const topic = json.RelatedTopics.find((t) => t.Text);
+            if (topic) {
+              resolve(topic.Text);
+              return;
+            }
+          }
+          resolve("No results found.");
+        } catch {
+          resolve("Error parsing search results.");
+        }
+      });
+    }).on("error", () => {
+      resolve("Error fetching search results.");
+    });
+  });
+}
+
+module.exports = search;
